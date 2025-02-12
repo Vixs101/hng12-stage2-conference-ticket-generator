@@ -1,101 +1,181 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { useState } from 'react'
+import {
+  Select,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+  SelectItem
+} from '@/components/ui/select'
+import { ProgressBar } from '@/components/ProgressBar'
+import { Button } from '@/components/ui/button';
+import { motion, AnimatePresence } from "framer-motion"
+import { AttendeeDetails } from '@/components/AttendeeDetails';
+
+
+export default function TicketSelection() {
+  const [selected, setSelected] = useState<string | null>(null)
+  const [ticketType, setTicketType] = useState<string | null>(null)
+  const [numberOfTickets, setNumberOfTickets] = useState<number | null>(null)
+  const [direction, setDirection] = useState(0)
+  const [currentStep, setCurrentStep] = useState(1)
+  const totalSteps = 3
+
+
+  const handleNext = () => {
+    if (currentStep < totalSteps) {
+      setDirection(1)
+      setCurrentStep((prev: number) => prev + 1)
+    }
+  }
+
+  const handleBack = () => {
+    setDirection(-1)
+    if (currentStep > 1) {
+      setCurrentStep((prev: number) => prev - 1)
+    }
+  }
+
+  const slideVariants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0,
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0,
+    }),
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+    <div className="flex items-center justify-center mt-5 md:mt-10">
+      <div className="w-full max-w-2xl bg-[#041E23] border  border-[#0E464F] backdrop-blur-xl rounded-3xl p-4 md:p-8">
+        <ProgressBar
+          step={currentStep}
+          totalSteps={totalSteps}
+          title="Ticket Selection"
         />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+        <div className='relative overflow-hidden'>
+          <AnimatePresence initial={false} custom={direction}>
+          {currentStep === 1 ? (<motion.div
+              key="step1"
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: "spring", stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 },
+              }}
+              className='bg-[#08252B] border border-[#0E464F] rounded-2xl p-6'>
+              <div className="bg-[#003333]/50 rounded-xl p-6 mb-8 border-b-4 border-x-2 border-[#07373F] text-center" style={{ background: "radial-gradient(57.42% 106.59% at 14.02% 32.06%, rgba(36, 160, 181, 0.20) 0%, rgba(36, 160, 181, 0.00) 100%), rgba(10, 12, 17, 0.10)", backdropFilter: "blur(7px)" }}>
+                <h2 className="text-5xl md:text-6xl font-bold text-white mb-2 road-rage">Techember Fest &#34;25</h2>
+                <p className="text-white text-center text-base md:text-sm mb-10 md:mb-3 roboto">
+                  Join us for an unforgettable experience at
+                  <br />
+                  [Event Name]! Secure your spot now.
+                </p>
+                <div className="flex flex-col md:flex-row items-center justify-center gap-1 text- text-white ">
+                  <div>
+                    <span className='text-base'>&#128205;</span>
+                    <span>[Event Location]</span>
+                  </div>
+                  <span className="hidden md:block mx-2">||</span>
+                  <span>March 15, 2025 | 7:00 PM</span>
+                </div>
+              </div>
+
+              <div className='mb-8 bg-[#07373F] h-1 rounded-full' />
+
+              <div className="mb-6">
+                <label className="text-base text-white mb-3 block roboto">Select Ticket Type:</label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 bg-[#052228] border border-[#07373F] rounded-3xl p-4">
+                  <div
+                    className={`border-[#197686] hover:bg-[#197686] p-4 rounded-xl cursor-pointer border  ${selected === "regular" ? "bg-[#197686] text-white" : ""}`}
+                    onClick={() => {
+                      setSelected("regular")
+                      setTicketType("regular")
+                      console.log(ticketType)
+                    }}>
+                    <div className="text-white text-2xl font-bold roboto">Free</div>
+                    <div className="text-base text-white roboto">REGULAR ACCESS</div>
+                    <div className="text-sm text-white roboto">20/32</div>
+                  </div>
+                  <div className={`border-[#197686] hover:bg-[#197686] p-4 rounded-xl cursor-pointer border ${selected === "vip" ? "bg-[#197686] text-white" : ""}`}
+                    onClick={() => {
+                      if (ticketType != "vip") {
+                        setTicketType("vip")
+                      }
+                      setSelected("vip")
+                      console.log(ticketType)
+                    }}>
+                    <div className="text-white text-2xl font-bold roboto">$150</div>
+                    <div className="text-base text-white roboto">VIP ACCESS</div>
+                    <div className="text-sm text-white roboto">20/32</div>
+                  </div>
+                  <div className={`border-[#197686] hover:bg-[#197686] p-4 rounded-xl cursor-pointer border  ${selected === "vvip" ? "bg-[#197686] text-white" : ""}`}
+                    onClick={() => {
+                      setSelected("vvip")
+                      setTicketType("vvip")
+                      console.log(ticketType)
+                    }}>
+                    <div className="text-white text-2xl font-bold roboto">$150</div>
+                    <div className={`text-base text-white roboto`}>VVIP ACCESS</div>
+                    <div className={`text-sm text-white roboto`}>30/32</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-8">
+                <label className="text-sm text-white text-base mb-3 block roboto">Number of Tickets</label>
+                <Select defaultValue="1">
+                  <SelectTrigger className="w-full bg-[#041E23] border border-[#07373F] text-white">
+                    <SelectValue placeholder="Select number of tickets" />
+                  </SelectTrigger>
+                  <SelectContent className='bg-[#041E23] border border-[#07373F] text-white'>
+                    <SelectItem value="1" onClick={() => {
+                      setNumberOfTickets(1)
+                      console.log(numberOfTickets)
+                    }}>1</SelectItem>
+                    <SelectItem value="2">2</SelectItem>
+                    <SelectItem value="3">3</SelectItem>
+                    <SelectItem value="4">4</SelectItem>
+                    <SelectItem value="5">5</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex flex-col-reverse md:flex-row gap-3 ">
+                <Button
+                  variant="outline"
+                  className="w-full font-[JejuMyeongjo] bg-transparent text-[#24A0B5] border-[#24A0B5] hover:bg-[#24A0B5] hover:text-white"
+                  onClick={() => window.history.back()}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  className="w-full bg-[#24A0B5] hover:bg-[#24A0B5]/30 font-[JejuMyeongjo] text-white"
+                  disabled={!selected} 
+                  onClick={handleNext}>
+                    Next
+                </Button>
+              </div>
+            </motion.div>) : (
+              <AttendeeDetails onBack={handleBack} onNext={handleNext}/>
+            )
+            }
+          </AnimatePresence>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
     </div>
-  );
+  )
 }
