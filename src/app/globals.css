@@ -29,7 +29,13 @@ body {
   font-variation-settings:
     "wdth" 100;
 }
+.uploadBg {
+  border: 4px solid rgba(36, 160, 181, 0.50);
+}
 
+.random {
+  background-color: rgba(0, 0, 0, 0.20);
+}
 @layer base {
   :root {
     --background: 0 0% 100%;

@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`py-3 px-6 md:py-6 md:px-20 lg:px-[120px]`}
+        className={`py-3 px-2 md:py-6 md:px-20 lg:px-[120px]`}
       >
         <Navbar/>
         {children}

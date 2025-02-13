@@ -10,8 +10,8 @@ export function ProgressBar({ step, totalSteps, title }: ProgressBarProps) {
   const progress = (step / totalSteps) * 100
 
   return (
-    <div className="w-full mb-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2 gap-3 md:gap-0">
+    <div className="w-full mt-5 md:mt-0 mb-8">
+      <div className="flex justify-between items-start md:items-center mb-2 gap-3 md:gap-0">
         <h1 className="text-2xl md:text-3xl font-thin text-white font-[JejuMyeongjo]">{title}</h1>
         <span className="text-base md:text-sm text-white">
           Step {step}/{totalSteps}
