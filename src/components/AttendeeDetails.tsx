@@ -21,6 +21,7 @@ export function AttendeeDetails({ onBack, onNext }: AttendeeDetailsProps) {
         image?: string;
         specialRequest?: string;
     }>({});
+    const [isLoading, setIsLoading] = useState(false)
 
     // checking local storage for attendeeData
     useEffect(() => {
@@ -68,6 +69,7 @@ export function AttendeeDetails({ onBack, onNext }: AttendeeDetailsProps) {
 
     // cloudinary upload funtion
     const uploadToCloudinary = async (file: File): Promise<string | null> => {
+        setIsLoading(true);
         const formData = new FormData();
         formData.append('file', file);
         formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!);
@@ -89,6 +91,8 @@ export function AttendeeDetails({ onBack, onNext }: AttendeeDetailsProps) {
         } catch (error) {
             console.error('Error uploading image:', error);
             return null;
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -178,10 +182,10 @@ export function AttendeeDetails({ onBack, onNext }: AttendeeDetailsProps) {
                 aria-labelledby="attendee-details-heading">
                 <div
 
-                    className="relative bg-[#052228] border border-[#07373F] rounded-3xl flex flex-col items-center md:items-start gap-8 cursor-pointer overflow-hidden text-white p-6"
+                    className="relative bg-[#052228] border border-[#07373F] rounded-3xl flex flex-col items-center md:items-start gap-8 cursor-pointer overflow-hidden text-white mb-4  p-6"
                 >
                     <h2 id="attendee-details-heading" className="roboto text-base">Upload Profile Photo</h2>
-                    <div className="hidden md:block h-48 w-full mb-6 aspect-square random">
+                    <div className="hidden md:block h-48 w-full mb-6 aspect-square random ">
                     </div>
                     <div
                         role="button"
@@ -192,12 +196,14 @@ export function AttendeeDetails({ onBack, onNext }: AttendeeDetailsProps) {
                             }
                         }}
                         aria-label="Upload profile photo. Drag and drop an image here or click to select a file."
-                        className={`md:absolute sm:inset-x-32 md:inset-x-36 lg:inset-x-40 inset-y-14 m  rounded-3xl flex flex-col gap-4 w-60 h-60 justify-center items-center z-50 ${!image ? "bg-[#0E464F] uploadBg p-6 " : ""}`}
+                        className={`md:absolute sm:inset-x-32 md:inset-x-36 lg:inset-x-40 inset-y-14 m  rounded-3xl flex flex-col gap-4 w-60 h-60 justify-center items-center z-50  ${!image ? "bg-[#0E464F] uploadBg p-6 " : ""}`}
                         onDragOver={(e) => e.preventDefault()}
                         onDrop={handleDrop}
                         onClick={() => document.getElementById("file-upload")?.click()}
                     >
-                        {image && imageDimensions ? (
+                        {isLoading ? (
+                            <p className="text-base text-white">Uploading...</p>
+                        ) : image && imageDimensions ? (
                             <div className="h-full w-full group">
                                 <Image
                                     src={image}
@@ -217,11 +223,29 @@ export function AttendeeDetails({ onBack, onNext }: AttendeeDetailsProps) {
                                             });
                                         }
                                     }}
+                                    onError={() =>
+                                        setErrors((prev) => ({
+                                            ...prev,
+                                            image: "Failed to load image.",
+                                        }))
+                                    }
                                 />
                                 <div className="absolute inset-0 bg-black/50 rounded-xl flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-100">
-                                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M25.2639 14.816C24.6812 10.2267 20.7505 6.66669 16.0052 6.66669C12.3305 6.66669 9.13854 8.81469 7.68121 12.2C4.81721 13.056 2.67188 15.76 2.67188 18.6667C2.67188 22.3427 5.66254 25.3334 9.33854 25.3334H10.6719V22.6667H9.33854C7.13321 22.6667 5.33854 20.872 5.33854 18.6667C5.33854 16.7947 6.93721 14.9907 8.90254 14.6454L9.67721 14.5094L9.93321 13.7654C10.8705 11.0307 13.1972 9.33335 16.0052 9.33335C19.6812 9.33335 22.6719 12.324 22.6719 16V17.3334H24.0052C25.4759 17.3334 26.6719 18.5294 26.6719 20C26.6719 21.4707 25.4759 22.6667 24.0052 22.6667H21.3385V25.3334H24.0052C26.9465 25.3334 29.3385 22.9414 29.3385 20C29.337 18.8047 28.9347 17.6444 28.196 16.7047C27.4574 15.7649 26.425 15.0999 25.2639 14.816Z" fill="#FAFAFA" />
-                                        <path d="M17.3385 18.6667V13.3334H14.6719V18.6667H10.6719L16.0052 25.3334L21.3385 18.6667H17.3385Z" fill="#FAFAFA" />
+                                    <svg
+                                        width="32"
+                                        height="32"
+                                        viewBox="0 0 32 32"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            d="M25.2639 14.816C24.6812 10.2267 20.7505 6.66669 16.0052 6.66669C12.3305 6.66669 9.13854 8.81469 7.68121 12.2C4.81721 13.056 2.67188 15.76 2.67188 18.6667C2.67188 22.3427 5.66254 25.3334 9.33854 25.3334H10.6719V22.6667H9.33854C7.13321 22.6667 5.33854 20.872 5.33854 18.6667C5.33854 16.7947 6.93721 14.9907 8.90254 14.6454L9.67721 14.5094L9.93321 13.7654C10.8705 11.0307 13.1972 9.33335 16.0052 9.33335C19.6812 9.33335 22.6719 12.324 22.6719 16V17.3334H24.0052C25.4759 17.3334 26.6719 18.5294 26.6719 20C26.6719 21.4707 25.4759 22.6667 24.0052 22.6667H21.3385V25.3334H24.0052C26.9465 25.3334 29.3385 22.9414 29.3385 20C29.337 18.8047 28.9347 17.6444 28.196 16.7047C27.4574 15.7649 26.425 15.0999 25.2639 14.816Z"
+                                            fill="#FAFAFA"
+                                        />
+                                        <path
+                                            d="M17.3385 18.6667V13.3334H14.6719V18.6667H10.6719L16.0052 25.3334L21.3385 18.6667H17.3385Z"
+                                            fill="#FAFAFA"
+                                        />
                                     </svg>
                                     <p className="text-base text-[#FAFAFA] text-center roboto">
                                         Drag & drop or click to upload
@@ -230,13 +254,28 @@ export function AttendeeDetails({ onBack, onNext }: AttendeeDetailsProps) {
                             </div>
                         ) : (
                             <>
-                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M25.2639 14.816C24.6812 10.2267 20.7505 6.66669 16.0052 6.66669C12.3305 6.66669 9.13854 8.81469 7.68121 12.2C4.81721 13.056 2.67188 15.76 2.67188 18.6667C2.67188 22.3427 5.66254 25.3334 9.33854 25.3334H10.6719V22.6667H9.33854C7.13321 22.6667 5.33854 20.872 5.33854 18.6667C5.33854 16.7947 6.93721 14.9907 8.90254 14.6454L9.67721 14.5094L9.93321 13.7654C10.8705 11.0307 13.1972 9.33335 16.0052 9.33335C19.6812 9.33335 22.6719 12.324 22.6719 16V17.3334H24.0052C25.4759 17.3334 26.6719 18.5294 26.6719 20C26.6719 21.4707 25.4759 22.6667 24.0052 22.6667H21.3385V25.3334H24.0052C26.9465 25.3334 29.3385 22.9414 29.3385 20C29.337 18.8047 28.9347 17.6444 28.196 16.7047C27.4574 15.7649 26.425 15.0999 25.2639 14.816Z" fill="#FAFAFA" />
-                                    <path d="M17.3385 18.6667V13.3334H14.6719V18.6667H10.6719L16.0052 25.3334L21.3385 18.6667H17.3385Z" fill="#FAFAFA" />
+                                <svg
+                                    width="32"
+                                    height="32"
+                                    viewBox="0 0 32 32"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        d="M25.2639 14.816C24.6812 10.2267 20.7505 6.66669 16.0052 6.66669C12.3305 6.66669 9.13854 8.81469 7.68121 12.2C4.81721 13.056 2.67188 15.76 2.67188 18.6667C2.67188 22.3427 5.66254 25.3334 9.33854 25.3334H10.6719V22.6667H9.33854C7.13321 22.6667 5.33854 20.872 5.33854 18.6667C5.33854 16.7947 6.93721 14.9907 8.90254 14.6454L9.67721 14.5094L9.93321 13.7654C10.8705 11.0307 13.1972 9.33335 16.0052 9.33335C19.6812 9.33335 22.6719 12.324 22.6719 16V17.3334H24.0052C25.4759 17.3334 26.6719 18.5294 26.6719 20C26.6719 21.4707 25.4759 22.6667 24.0052 22.6667H21.3385V25.3334H24.0052C26.9465 25.3334 29.3385 22.9414 29.3385 20C29.337 18.8047 28.9347 17.6444 28.196 16.7047C27.4574 15.7649 26.425 15.0999 25.2639 14.816Z"
+                                        fill="#FAFAFA"
+                                    />
+                                    <path
+                                        d="M17.3385 18.6667V13.3334H14.6719V18.6667H10.6719L16.0052 25.3334L21.3385 18.6667H17.3385Z"
+                                        fill="#FAFAFA"
+                                    />
                                 </svg>
-                                <p className="text-base text-[#FAFAFA] text-center roboto">Drag & drop or click to upload</p>
+                                <p className="text-base text-[#FAFAFA] text-center roboto">
+                                    Drag & drop or click to upload
+                                </p>
                             </>
                         )}
+
                         <input
                             type="file"
                             id="file-upload"
