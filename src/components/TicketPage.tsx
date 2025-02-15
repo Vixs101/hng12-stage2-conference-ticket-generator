@@ -4,20 +4,55 @@ import { Button } from "@/components/ui/button"
 import { Download } from "lucide-react"
 import Ticket from "./Ticket"
 import Image from "next/image"
+import { useState, useEffect } from "react"
 
 interface TicketConfirmationProps {
     onBookAnother: () => void
     userData: {
-        name: string
-        email: string
-        image: string
-        ticketType: string
+        ticketType: "",
+        numberOfTickets: 1,
+        name: "",
+        email: "",
+        image: "",
+        specialRequest: "",
     }
 }
 
 export function TicketConfirmation({ onBookAnother, userData }: TicketConfirmationProps) {
+    const [selectedTicket, setSelectedTicket] = useState<string | null>(null)
+    const [numberOfTickets, setNumberOfTickets] = useState<string | null>(null)
+    const [name, setName] = useState<string | null>(null)
+    const [email, setEmail] = useState<string | null>(null)
+    const [specialRequest, setSpecialRequest] = useState<string | null>(null)
+    const [image, setImage] = useState<string | null>(null)
+
+
+    // checking local storage for saved tickets
+    useEffect(() => {
+        // ticket selection
+        const ticketSelection = localStorage.getItem("ticketSelection") ;
+        // user data
+        const storedAttendeeData = localStorage.getItem("attendeeData");
+
+        // merging the data
+        if (ticketSelection && storedAttendeeData) {
+            const { ticketType, numberOfTickets } = JSON.parse(ticketSelection);
+            const { name, email, image, specialRequest } = JSON.parse(storedAttendeeData);
+
+            setSelectedTicket(ticketType);
+            setName(name);
+            setEmail(email);
+            setImage(image);
+            setSpecialRequest(specialRequest);
+            setNumberOfTickets(numberOfTickets);
+            console.log(ticketType, numberOfTickets, specialRequest, name, email, image, specialRequest);
+        }
+    }, [])
+
+    
+    // assigning the values gotten from local storage to the userData object
+
     const handleDownload = () => {
-        // Implement ticket download logic here
 
         console.log("Downloading ticket...", userData)
     }
@@ -44,8 +79,8 @@ export function TicketConfirmation({ onBookAnother, userData }: TicketConfirmati
                             </p>
                         </div>
                     </div>
-                    <div className="flex items-center justify-center ">
-                        <Image src={"/user.png"} alt="user" height={140} width={140} />
+                    <div className="flex items-center justify-center mx-auto">
+                        <Image src={image || "/user.png"} alt="user" height={140} width={140} className="h-36 w-9/12 rounded-xl"/>
                     </div>
                     <table className="w-full border-[#133D44] border-spacing-y-4 p-2 bg-[#08343C] rounded-xl border-collapse ">
                         <tbody>
@@ -53,11 +88,11 @@ export function TicketConfirmation({ onBookAnother, userData }: TicketConfirmati
                             <tr>
                                 <td className="p-2 w-1/2 border-r-2 border-b-2 border-[#133D44]">
                                     <p className="text-xs  mb-1 text-[#fff] opacity-[0.33]">Enter your name</p>
-                                    <p className="text-white text-sm ">Avi Chukwu</p>
+                                    <p className="text-white text-sm ">{name || "Elijah"}</p>
                                 </td>
                                 <td className="p-1 border-b-2  border-[#133D44] w-1/2">
                                     <p className="text-xs mb-1 text-[#fff] opacity-[0.33]">Enter your email *</p>
-                                    <p className="text-white text-[13px]">User@email.com</p>
+                                    <p className="text-white text-[13px]">{email || "User@email.com"}</p>
                                 </td>
                             </tr>
 
@@ -65,11 +100,11 @@ export function TicketConfirmation({ onBookAnother, userData }: TicketConfirmati
                             <tr>
                                 <td className="p-1 w-1/2 border-r-2 border-b-2 border-[#133D44]">
                                     <p className="text-xs text-[#fff] opacity-[0.33] mb-1">Ticket Type</p>
-                                    <p className="text-white text-xs">VIP</p>
+                                    <p className="text-white text-xs">{selectedTicket || "VIP"}</p>
                                 </td>
                                 <td className="p-1 border-b-2  border-[#133D44] w-1/2">
                                     <p className="text-sm text-[#fff] opacity-[0.33] mb-1">Ticket for :</p>
-                                    <p className="text-white text-xs">1</p>
+                                    <p className="text-white text-xs">{numberOfTickets ||"1"}</p>
                                 </td>
                             </tr>
 
@@ -78,7 +113,7 @@ export function TicketConfirmation({ onBookAnother, userData }: TicketConfirmati
                                 <td colSpan={2} className="p-2">
                                     <p className="text-xs text-[#fff] opacity-[0.33] mb-1">Special request?</p>
                                     <p className="text-white text-xs">
-                                        Nil ? Or the users sad story they write in there gets this whole space, Max of three rows
+                                        {specialRequest || "NIl"} 
                                     </p>
                                 </td>
                             </tr>
@@ -92,11 +127,13 @@ export function TicketConfirmation({ onBookAnother, userData }: TicketConfirmati
                 <Button
                     variant="outline"
                     className="w-full bg-transparent text-white border-gray-600 hover:bg-[#003333]/50 hover:text-white"
-                    onClick={onBookAnother}
+                    onClick={() => {
+                        onBookAnother()
+                    }}
                 >
                     Book Another Ticket
                 </Button>
-                <Button className="w-full bg-[#24A0B5] hover:bg-[#24A0B5]/30 text-white" onClick={handleDownload}>
+                <Button className="w-full bg-[#24A0B5] hover:bg-[#24A0B5]/30 text-white" onClick={handleDownload} disabled>
                     <Download className="w-4 h-4 mr-2" />
                     Download Ticket
                 </Button>

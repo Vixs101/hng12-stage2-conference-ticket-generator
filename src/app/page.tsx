@@ -15,10 +15,12 @@ import { AttendeeDetails } from '@/components/AttendeeDetails';
 import { TicketConfirmation } from '@/components/TicketPage';
 
 interface UserData {
-  name: string
-  email: string
-  image: string
-  ticketType: string
+  ticketType: "",
+  numberOfTickets: 1,
+  name: "",
+  email: "",
+  image: "",
+  specialRequest: "",
 }
 
 
@@ -26,6 +28,7 @@ export default function TicketSelection() {
   const [selected, setSelected] = useState<string | null>(null)
   const [numberOfTickets, setNumberOfTickets] = useState<string | null>(null)
   const [errors, setErrors] = useState({ ticketType: "", numberOfTickets: "" });
+ 
 
   const [currentStep, setCurrentStep] = useState(1)
   const totalSteps = 3
@@ -33,11 +36,28 @@ export default function TicketSelection() {
 
   const [selectedTicket, setSelectedTicket] = useState<string | null>(null)
   const [userData, setUserData] = useState<UserData>({
+    ticketType: "",
+    numberOfTickets: 1,
     name: "",
     email: "",
     image: "",
-    ticketType: "",
+    specialRequest: "",
   })
+
+  useEffect(() => {
+    // Load attendee data from localStorage
+    const storedAttendeeData = localStorage.getItem('attendeeData');
+    if (storedAttendeeData) {
+      const { name, email, image } = JSON.parse(storedAttendeeData);
+      setUserData(prev => ({
+        ...prev,
+        name,
+        email,
+        image,
+      }));
+    }
+  }, []);
+
   // // saving the user data on every change
   useEffect(() => {
     if (selected && numberOfTickets) {
@@ -92,15 +112,19 @@ export default function TicketSelection() {
   }
 
   const handleBookAnother = () => {
+    localStorage.clear();
     setDirection(-1)
     setCurrentStep(1)
     setSelectedTicket(null)
     setUserData({
+      ticketType: "",
+      numberOfTickets: 1,
       name: "",
       email: "",
       image: "",
-      ticketType: "",
-    })
+      specialRequest: "",
+    });
+
   }
 
   const slideVariants = {

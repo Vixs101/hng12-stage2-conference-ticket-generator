@@ -6,7 +6,7 @@ import Image from "next/image";
 
 interface AttendeeDetailsProps {
     onBack: () => void;
-    onNext: () => void;
+    onNext: (data: { name: string, email: string, image: string }) => void; // Update interface
 }
 
 export function AttendeeDetails({ onBack, onNext }: AttendeeDetailsProps) {
@@ -26,14 +26,15 @@ export function AttendeeDetails({ onBack, onNext }: AttendeeDetailsProps) {
     useEffect(() => {
         const storedData = localStorage.getItem('attendeeData');
         if (storedData) {
-            const { name, email, specialRequest, image } = JSON.parse(storedData);
-            setName(name);
-            setEmail(email);
-            setSpecialRequest(specialRequest);
-            setImage(image);
-
-            if (imageDimensions) setImageDimensions(imageDimensions);
-            console.log(name, email,specialRequest, image, imageDimensions)
+            try {
+                const parseData = JSON.parse(storedData);
+                setName(parseData.name || "")
+                setEmail(parseData.email || "")
+                setSpecialRequest(parseData.specialRequest || "")
+                setImage(parseData.image || null)
+            } catch (error) {
+                console.error('Error parsing attendee data', error)
+            }
         }
     }, []);
 
@@ -165,8 +166,8 @@ export function AttendeeDetails({ onBack, onNext }: AttendeeDetailsProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (validateForm()) {
-            onNext();
+        if (validateForm() && image) { // Ensure image is present
+            onNext({ name, email, image });
         }
     };
 
@@ -328,7 +329,10 @@ export function AttendeeDetails({ onBack, onNext }: AttendeeDetailsProps) {
                     </div>
                 </div>
 
-                <div className="flex flex-col-reverse md:flex-row gap-3 mt-7">
+                <div className="flex flex-col md:flex-row-reverse gap-3 mt-7">
+                    <Button className="w-full bg-[#24A0B5] hover:bg-[#24A0B5]/30 font-[JejuMyeongjo] text-white" type="submit">
+                        Get My Free Ticket
+                    </Button>
                     <Button
                         variant="outline"
                         className="w-full font-[JejuMyeongjo] bg-transparent text-[#24A0B5] border-[#24A0B5] hover:bg-[#24A0B5] hover:text-white"
@@ -336,9 +340,7 @@ export function AttendeeDetails({ onBack, onNext }: AttendeeDetailsProps) {
                     >
                         Back
                     </Button>
-                    <Button className="w-full bg-[#24A0B5] hover:bg-[#24A0B5]/30 font-[JejuMyeongjo] text-white" type="submit">
-                        Get My Free Ticket
-                    </Button>
+
                 </div>
             </form>
         </div>
