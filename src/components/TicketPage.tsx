@@ -79,8 +79,8 @@ export function TicketConfirmation({ onBookAnother, userData }: TicketConfirmati
                             </p>
                         </div>
                     </div>
-                    <div className="flex items-center justify-center mx-auto">
-                        <Image src={image || "/user.png"} alt="user" height={140} width={140} className="h-36 w-9/12 rounded-xl"/>
+                    <div className="flex items-center justify-center mx-auto relative h-36 aspect-square">
+                        <Image src={image || "/user.png"} alt="user" fill className="size-full rounded-xl object-cover"/>
                     </div>
                     <table className="w-full border-[#133D44] border-spacing-y-4 p-2 bg-[#08343C] rounded-xl border-collapse ">
                         <tbody>
