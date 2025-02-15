@@ -147,9 +147,10 @@ export default function TicketSelection() {
 
   return (
     <>
-    <Head>
-      <link rel="icon" href="/thumb.png" />
-    </Head>
+      <Head>
+        <link rel="icon" href="/thumb.ico"  />
+        <link rel="shortcut icon" href="/thumb.ico" />
+      </Head>
       <div className="flex items-center justify-center mt-5 md:mt-10">
         <div className="w-full max-w-2xl bg-[#041E23] border  border-[#0E464F] backdrop-blur-xl rounded-3xl p-2 md:p-8">
           <ProgressBar
