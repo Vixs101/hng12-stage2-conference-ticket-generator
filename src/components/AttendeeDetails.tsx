@@ -15,6 +15,7 @@ export function AttendeeDetails({ onBack, onNext }: AttendeeDetailsProps) {
     const [specialRequest, setSpecialRequest] = useState<string>("");
     const [image, setImage] = useState<string | null>(null);
     const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number } | null>(null);
+    const [ticketType, setTicketType] = useState<string>("")
     const [errors, setErrors] = useState<{
         name?: string;
         email?: string;
@@ -25,10 +26,13 @@ export function AttendeeDetails({ onBack, onNext }: AttendeeDetailsProps) {
 
     // checking local storage for attendeeData
     useEffect(() => {
+        const ticketSelection = localStorage.getItem("ticketSelection");
         const storedData = localStorage.getItem('attendeeData');
-        if (storedData) {
+        if (storedData && ticketSelection) {
             try {
                 const parseData = JSON.parse(storedData);
+                const parseSelection = JSON.parse(ticketSelection)
+                setTicketType(parseSelection.ticketType)
                 setName(parseData.name || "")
                 setEmail(parseData.email || "")
                 setSpecialRequest(parseData.specialRequest || "")
@@ -370,7 +374,7 @@ export function AttendeeDetails({ onBack, onNext }: AttendeeDetailsProps) {
 
                 <div className="flex flex-col md:flex-row-reverse gap-3 mt-7">
                     <Button className="w-full bg-[#24A0B5] hover:bg-[#24A0B5]/30 font-[JejuMyeongjo] text-white" type="submit">
-                        Get My Free Ticket
+                        Get My {ticketType} Ticket
                     </Button>
                     <Button
                         variant="outline"
